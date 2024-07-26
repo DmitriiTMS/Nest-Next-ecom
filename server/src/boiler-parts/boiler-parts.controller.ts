@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BoilerPartsService } from './boiler-parts.service';
-import { CreateBoilerPartDto } from './dto/create-boiler-part.dto';
-import { UpdateBoilerPartDto } from './dto/update-boiler-part.dto';
+import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
 
 @Controller('boiler-parts')
 export class BoilerPartsController {
   constructor(private readonly boilerPartsService: BoilerPartsService) {}
 
-  @Post()
-  create(@Body() createBoilerPartDto: CreateBoilerPartDto) {
-    return this.boilerPartsService.create(createBoilerPartDto);
-  }
-
+  @UseGuards(AuthenticatedGuard)
   @Get()
-  findAll() {
-    return this.boilerPartsService.findAll();
+  paginateAndFilter(@Query() query) {
+    return this.boilerPartsService.paginateAndFilter(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boilerPartsService.findOne(+id);
+  @UseGuards(AuthenticatedGuard)
+  @Get('find/:id')
+  getOne(@Param('id') id: string) {
+    return this.boilerPartsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoilerPartDto: UpdateBoilerPartDto) {
-    return this.boilerPartsService.update(+id, updateBoilerPartDto);
+  @UseGuards(AuthenticatedGuard)
+  @Get('bestsellers')
+  getBestsellers() {
+    return this.boilerPartsService.bestsellers();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boilerPartsService.remove(+id);
+  @UseGuards(AuthenticatedGuard)
+  @Get('new')
+  getNew() {
+    return this.boilerPartsService.new();
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('search')
+  search(@Body() {search}: {search: string}) {
+    return this.boilerPartsService.searchByString(search)
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('name')
+  getByName(@Body() {name}: {name: string}) {
+    return this.boilerPartsService.findOneByName(name)
   }
 }

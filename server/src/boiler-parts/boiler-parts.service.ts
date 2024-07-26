@@ -1,26 +1,90 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBoilerPartDto } from './dto/create-boiler-part.dto';
-import { UpdateBoilerPartDto } from './dto/update-boiler-part.dto';
+import { IBoilerPartsQuery } from './types';
+import { PrismaService } from 'src/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BoilerPartsService {
-  create(createBoilerPartDto: CreateBoilerPartDto) {
-    return 'This action adds a new boilerPart';
+  constructor(private prisma: PrismaService) {}
+
+  async paginateAndFilter(query: IBoilerPartsQuery) {
+    const limit = +query.limit;
+    const offset = +query.offset * limit;
+    const count = await this.prisma.boilerparts.count();
+    const rows = await this.prisma.boilerparts.findMany({
+      take: limit,
+      skip: offset,
+    });
+
+    return { count, rows };
   }
 
-  findAll() {
-    return `This action returns all boilerParts`;
+  async bestsellers() {
+    const [rows, count] = await this.prisma.$transaction([
+      this.prisma.boilerparts.findMany({
+        where: {
+          bestsellers: true,
+        },
+      }),
+      this.prisma.boilerparts.count({
+        where: { bestsellers: true },
+      }),
+    ]);
+
+    return { count, rows };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} boilerPart`;
+  async new() {
+    const [rows, count] = await this.prisma.$transaction([
+      this.prisma.boilerparts.findMany({
+        where: {
+          new: true,
+        },
+      }),
+      this.prisma.boilerparts.count({
+        where: { new: true },
+      }),
+    ]);
+
+    return { count, rows };
   }
 
-  update(id: number, updateBoilerPartDto: UpdateBoilerPartDto) {
-    return `This action updates a #${id} boilerPart`;
+  async findOne(id: string) {
+    return await this.prisma.boilerparts.findFirst({
+      where: {
+        id,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} boilerPart`;
+  async findOneByName(name: string) {
+    return await this.prisma.boilerparts.findFirst({
+      where: {
+        name,
+      },
+    });
+  }
+
+  async searchByString(str: string) {
+    const [rows, count] = await this.prisma.$transaction([
+      this.prisma.boilerparts.findMany({
+        where: {
+          name: {
+            startsWith: `%${str}%`,
+            mode: 'insensitive'
+          },
+        },
+      }),
+      this.prisma.boilerparts.count({
+        where: {
+          name: {
+            startsWith: `%${str}%`,
+            mode: 'insensitive'
+          },
+        },
+      }),
+    ]);
+
+    return { count, rows };
   }
 }

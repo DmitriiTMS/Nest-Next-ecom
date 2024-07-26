@@ -33,6 +33,5 @@ async function bootstrap() {
 
   await app.listen(4200);
 
-  // 1:07:00
 }
 bootstrap();
