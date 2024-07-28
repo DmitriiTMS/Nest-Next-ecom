@@ -11,31 +11,48 @@ model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  username String @unique
-  email    String @unique
-  password String
+  username  String   @unique
+  email     String   @unique
+  password  String
 
   @@map("user")
 }
 
 model Boilerparts {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  boilerManufacture String  @map("boiler_manufacture")
-  price             Decimal @default(0)
-  partsManufacture  String  @map("parts_manufacture")
-  vendorCode        String     @map("vendor_code")
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  boilerManufacture String   @map("boiler_manufacture")
+  price             Decimal  @default(0)
+  partsManufacture  String   @map("parts_manufacture")
+  vendorCode        String   @map("vendor_code")
   name              String
   description       String
   images            String
-  inStock           Int     @default(0) @map("in_stock")
-  bestsellers       Boolean @default(false)
-  new               Boolean @default(false)
+  inStock           Int      @default(0) @map("in_stock")
+  bestsellers       Boolean  @default(false)
+  new               Boolean  @default(false)
   popularity        Int
   compatibility     String
 
   @@map("boilerparts")
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId            String
+  partId            String
+  boilerManufacture String  @map("boiler_manufacture")
+  price             Decimal @default(0)
+  partsManufacture  String  @map("parts_manufacture")
+  name              String
+  image             String
+  inStock           Int     @default(0) @map("in_stock")
+  count             Int?    @default(0)
+  totalPrice        Decimal @map("total_price")
+
+  @@map("cart")
 }
