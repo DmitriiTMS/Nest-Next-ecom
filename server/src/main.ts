@@ -8,8 +8,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
-  app.setGlobalPrefix('api');
+ 
+
 
   app.use(
     session({
@@ -21,6 +21,12 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.enableCors({
+    credentials: true,
+    origin: ['http://localhost:3000']
+  });
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Nest-Next-E-commerc')

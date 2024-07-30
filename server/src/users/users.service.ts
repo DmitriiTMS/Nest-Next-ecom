@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -22,14 +26,17 @@ export class UsersService {
       },
     });
 
-    if (userEmail)
-      throw new BadRequestException(
-        `Пользователь с ${userEmail.email} уже существует`,
-      );
-    if (userName)
-      throw new BadRequestException(
-        `Пользователь с ${userName.username} уже существует`,
-      );
+    
+    if (userName) {
+      return {
+        warningMessage: `Пользователь с ${userName.username} уже существует`,
+      };
+    }
+    if (userEmail) {
+      return {
+        warningMessage: `Пользователь с ${userEmail.email} уже существует`,
+      };
+    }
 
     const hashPassword = await bcrypt.hash(createUserDto.password, 10);
 
@@ -42,11 +49,9 @@ export class UsersService {
     });
 
     return {
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
+      id: user.id,
+      username: user.username,
+      email: user.email,
     };
   }
 
