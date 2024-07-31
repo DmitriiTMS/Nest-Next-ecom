@@ -3,6 +3,9 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import styles from '@/styles/auth/index.module.scss'
 import SigneUpForm from '@/components/modules/AuthPage/SigneUpForm'
 import SigneInForm from '@/components/modules/AuthPage/SigneInForm'
+import ModeToggler from '@/components/elements/ModeToggler/ModeToggler'
+import { useStore } from 'effector-react'
+import { $mode } from '@/context/mode'
 
 const AuthPage = () => {
   const isMedia800 = useMediaQuery(800)
@@ -13,6 +16,8 @@ const AuthPage = () => {
   const switchCircle2 = useRef() as MutableRefObject<HTMLDivElement>
   const aContainer = useRef() as MutableRefObject<HTMLDivElement>
   const bContainer = useRef() as MutableRefObject<HTMLDivElement>
+  const mode = useStore($mode)
+  const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
 
   const switchForm = () => {
     switchCtn.current.classList.add(styles.is_gx)
@@ -29,9 +34,12 @@ const AuthPage = () => {
   }
 
   return (
-    <div className={styles.main}>
+    <div className={`${styles.main} ${darkModeClass}`}>
+      <div className={styles.mode_toggle}>
+        <ModeToggler />
+      </div>
       <div
-        className={`${styles.container} ${styles.a_container}`}
+        className={`${styles.container} ${styles.a_container} ${darkModeClass}`}
         id="a-container"
         ref={aContainer}
       >
@@ -41,29 +49,38 @@ const AuthPage = () => {
       </div>
 
       <div
-        className={`${styles.container} ${styles.b_container}`}
+        className={`${styles.container} ${styles.b_container} ${darkModeClass}`}
         id="b-container"
         ref={bContainer}
       >
         <div className={styles.container__inner}>
-         <SigneInForm/>
+          <SigneInForm />
         </div>
       </div>
 
-      <div className={styles.switch} id="switch-cnt" ref={switchCtn}>
-        <div className={styles.switch__circle} ref={switchCircle1}></div>
+      <div
+        className={`${styles.switch} ${darkModeClass}`}
+        id="switch-cnt"
+        ref={switchCtn}
+      >
         <div
-          className={`${styles.switch__circle} ${styles.switch__circle__t}`}
+          className={`${styles.switch__circle} ${darkModeClass}`}
+          ref={switchCircle1}
+        ></div>
+        <div
+          className={`${styles.switch__circle} ${styles.switch__circle__t} ${darkModeClass}`}
           ref={switchCircle2}
         ></div>
         <div className={styles.switch__container} id="switch_c1" ref={switchC1}>
           {!isMedia800 && (
             <>
-              <h2 className={`${styles.form_title} ${styles.title}`}>
+              <h2
+                className={`${styles.form_title} ${styles.title} ${darkModeClass}`}
+              >
                 Добро пожаловать !
               </h2>
               <p
-                className={`${styles.switch__description} ${styles.description}`}
+                className={`${styles.switch__description} ${styles.description} ${darkModeClass}`}
               >
                 Чтобы оставаться с нами на связи, пожалуйста, войдите под своей
                 личной информацией
@@ -72,7 +89,7 @@ const AuthPage = () => {
           )}
           <button
             onClick={switchForm}
-            className={`${styles.switch__button} ${styles.button} ${styles.switch_btn}`}
+            className={`${styles.switch__button} ${styles.button} ${styles.switch_btn} ${darkModeClass}`}
           >
             Войти
           </button>
@@ -84,7 +101,9 @@ const AuthPage = () => {
         >
           {!isMedia800 && (
             <>
-              <h2 className={`${styles.switch__title} ${styles.title}`}>
+              <h2
+                className={`${styles.switch__title} ${styles.title} ${darkModeClass}`}
+              >
                 Привет, друг!
               </h2>
               <p
@@ -96,7 +115,7 @@ const AuthPage = () => {
           )}
           <button
             onClick={switchForm}
-            className={`${styles.switch__button} ${styles.button} ${styles.switch_btn}`}
+            className={`${styles.switch__button} ${styles.button} ${styles.switch_btn} ${darkModeClass}`}
           >
             Создать
           </button>
